@@ -9,7 +9,7 @@
   <body>
     <div class="container">
       <ul class="comments" id="comment-section">
-        <li class="comment">
+        <!-- <li class="comment">
           <div class="comment-header">
             <div>Глеб Фокин</div>
             <div>12.02.22 12:18</div>
@@ -41,7 +41,7 @@
               <span class="likes-counter">75</span>
               <button class="like-button -active-like"></button>
             </div>
-          </div>
+          </div> -->
         </li>
       </ul>
       <div class="add-form">
@@ -71,32 +71,104 @@
     const nameInputEl = document.getElementById("add-form-name");
     const textInputEl = document.getElementById("add-form-text");
     const sendButtonEl = document.getElementById("add-form-button");
-    let currentDate = new Date();
 
-    console.log(nameInputEl, textInputEl);
+    const comments = [
+      { 
+        nickname: "Глеб Фокин", 
+        date: "12.02.22 12:18", 
+        text: "Это будет первый комментарий на этой странице", 
+        likes: 3,
+        isLiked: false 
+      },
+      { 
+        nickname: "Варвара Н.", 
+        date: "13.02.22 19:22", 
+        text: "Мне нравится как оформлена эта страница! ❤", 
+        likes: 75,
+        isLiked: false 
+      }
+    ];
 
-    const commentSection = document.getElementById("comment-section");
+    function renderComments(comments) {
+      const commentsContainer = document.getElementById("comment-section");
 
-    console.log(commentSection)
-
-    sendButtonEl.addEventListener("click", () => {
-      commentSection.innerHTML += `<li class="comment">
+      commentsContainer.innerHTML = comments.map((comment, index) => `
+        <li class="comment">
           <div class="comment-header">
-            <div>${nameInputEl.value}</div>
-            <div>${currentDate.getDate()}.${currentDate.getMonth() + 1}.${currentDate.getFullYear()} ${currentDate.getHours()}:${currentDate.getMinutes()}</div>
+            <div>${comment.nickname}</div>
+            <div>${comment.date}</div>
           </div>
           <div class="comment-body">
             <div class="comment-text">
-              ${textInputEl.value}
+              ${comment.text}
             </div>
           </div>
           <div class="comment-footer">
             <div class="likes">
-              <span class="likes-counter">0</span>
-              <button class="like-button -active-like"></button>
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button ${comment.isLiked ? '-active-like' : ''}" data-index="${index}"></button>
             </div>
           </div>
-        </li>`
+        </li>`).join('');
+
+      initLikeListeners();
+    }
+
+    function initLikeListeners() {
+      const likeButtons = document.querySelectorAll('.like-button');
+      
+      likeButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+          const index = parseInt(button.dataset.index);
+          toggleLike(index);
+        });
+      });
+    }
+
+    function toggleLike(index) {
+      const comment = comments[index];
+      
+      if (comment.isLiked) {
+        comment.likes--;
+        comment.isLiked = false;
+      } else {
+        comment.likes++;
+        comment.isLiked = true;
+      }
+      
+      renderComments(comments);
+    }
+
+    renderComments(comments);
+
+    sendButtonEl.addEventListener("click", () => {
+      let currentDate = new Date();
+      textInputEl.classList.remove("error");
+      nameInputEl.classList.remove("error");
+
+      if (textInputEl.value === '' || nameInputEl.value === '') {
+        textInputEl.classList.add("error");
+        nameInputEl.classList.add("error");
+        return;
+      }
+
+      // Создаем новый комментарий и добавляем в массив
+      const newComment = {
+        nickname: nameInputEl.value,
+        date: `${currentDate.getDate().toString().padStart(2, '0')}.${(currentDate.getMonth() + 1).toString().padStart(2, '0')}.${currentDate.getFullYear().toString().slice(-2)} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`,
+        text: textInputEl.value,
+        likes: 0,
+        isLiked: false
+      };
+      
+      comments.push(newComment);
+      
+      // Очищаем поля ввода
+      textInputEl.value = "";
+      nameInputEl.value = "";
+      
+      // Перерисовываем все комментарии
+      renderComments(comments);
     });
 
     console.log("It works!");
