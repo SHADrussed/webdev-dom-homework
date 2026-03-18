@@ -1,5 +1,6 @@
 import { comments } from './comments.js'
 import { renderComments } from './renderComments.js'
+import { updateComments } from './comments.js'
 
 export function initLikeListeners() {
     const likeButtons = document.querySelectorAll('.like-button')
@@ -31,7 +32,7 @@ export function initAddCommentListener() {
     const sendButtonEl = document.getElementById('add-form-button')
     const nameInputEl = document.getElementById('add-form-name')
     sendButtonEl.addEventListener('click', () => {
-        let currentDate = new Date()
+        // let currentDate = new Date()
         textInputEl.classList.remove('error')
         nameInputEl.classList.remove('error')
 
@@ -41,26 +42,47 @@ export function initAddCommentListener() {
             return
         }
 
-        // Создаем новый комментарий и добавляем в массив
         const newComment = {
-            nickname: nameInputEl.value,
-            date: `${currentDate.getDate().toString().padStart(2, '0')}.${(currentDate.getMonth() + 1).toString().padStart(2, '0')}.${currentDate.getFullYear().toString().slice(-2)} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`,
             text: textInputEl.value
                 .replaceAll('<', '&lt;')
                 .replaceAll('>', '&gt;'),
-            likes: 0,
-            isLiked: false,
+            name: nameInputEl.value
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;'),
         }
 
-        comments.push(newComment)
-
-        // Очищаем поля ввода
-        textInputEl.value = ''
-        nameInputEl.value = ''
-
-        // Перерисовываем все комментарии
-        renderComments(comments)
+        fetch('https://wedev-api.sky.pro/api/v1/mikhail-zakharov/comments', {
+            method: 'POST',
+            body: JSON.stringify(newComment),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data)
+                fetch(
+                    'https://wedev-api.sky.pro/api/v1/mikhail-zakharov/comments',
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        console.log(data)
+                        updateComments(data.comments)
+                        renderComments()
+                        // Очищаем поля ввода
+                        textInputEl.value = ''
+                        nameInputEl.value = ''
+                    })
+                    .catch((error) => console.error(error))
+            })
+            .catch((error) => console.error(error))
     })
+
+    // comments.push(newComment)
+
+    // // Очищаем поля ввода
+    // textInputEl.value = ''
+    // nameInputEl.value = ''
+
+    // // Перерисовываем все комментарии
+    // renderComments(comments)
 }
 
 function toggleLike(index) {
