@@ -1,15 +1,10 @@
-import { renderComments } from './modules/renderComments.js'
 import { initAddCommentListener } from './modules/initListeners.js'
-import { updateComments } from './modules/comments.js'
+import { fetchAndLoad } from './modules/fetchAndLoad.js'
+import { commentsContainer } from './modules/renderComments.js'
 
-fetch('https://wedev-api.sky.pro/api/v1/mikhail-zakharov/comments')
-    .then((response) => response.json())
-    .then((data) => {
-        console.log(data)
-        updateComments(data.comments)
-        renderComments()
-    })
-    .catch((error) => console.error(error))
+console.log(commentsContainer)
+commentsContainer.innerHTML = '<h2>Загружаю комментарии...</h2>'
+fetchAndLoad()
 
 initAddCommentListener()
 

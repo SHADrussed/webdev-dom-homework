@@ -1,6 +1,6 @@
 import { comments } from './comments.js'
 import { renderComments } from './renderComments.js'
-import { updateComments } from './comments.js'
+import { fetchAndLoad } from './fetchAndLoad.js'
 
 export function initLikeListeners() {
     const likeButtons = document.querySelectorAll('.like-button')
@@ -33,6 +33,7 @@ export function initAddCommentListener() {
     const nameInputEl = document.getElementById('add-form-name')
     sendButtonEl.addEventListener('click', () => {
         // let currentDate = new Date()
+
         textInputEl.classList.remove('error')
         nameInputEl.classList.remove('error')
 
@@ -41,6 +42,9 @@ export function initAddCommentListener() {
             nameInputEl.classList.add('error')
             return
         }
+
+        sendButtonEl.disabled = true
+        sendButtonEl.textContent = 'Комментарий добавляется...'
 
         const newComment = {
             text: textInputEl.value
@@ -58,31 +62,15 @@ export function initAddCommentListener() {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data)
-                fetch(
-                    'https://wedev-api.sky.pro/api/v1/mikhail-zakharov/comments',
-                )
-                    .then((response) => response.json())
-                    .then((data) => {
-                        console.log(data)
-                        updateComments(data.comments)
-                        renderComments()
-                        // Очищаем поля ввода
-                        textInputEl.value = ''
-                        nameInputEl.value = ''
-                    })
-                    .catch((error) => console.error(error))
+                fetchAndLoad()
+
+                sendButtonEl.disabled = false
+                sendButtonEl.textContent = 'Написать'
+                textInputEl.value = ''
+                nameInputEl.value = ''
             })
             .catch((error) => console.error(error))
     })
-
-    // comments.push(newComment)
-
-    // // Очищаем поля ввода
-    // textInputEl.value = ''
-    // nameInputEl.value = ''
-
-    // // Перерисовываем все комментарии
-    // renderComments(comments)
 }
 
 function toggleLike(index) {

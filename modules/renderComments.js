@@ -1,7 +1,7 @@
 import { initAnswerListeners, initLikeListeners } from './initListeners.js'
 import { comments } from './comments.js'
 
-const commentsContainer = document.getElementById('comment-section')
+export const commentsContainer = document.getElementById('comment-section')
 
 export function renderComments() {
     const commentsHtml = comments
