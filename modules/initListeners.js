@@ -1,6 +1,7 @@
 import { comments } from './comments.js'
 import { renderComments } from './renderComments.js'
 import { fetchAndLoad } from './fetchAndLoad.js'
+import { postComment } from './postComment.js'
 
 export function initLikeListeners() {
     const likeButtons = document.querySelectorAll('.like-button')
@@ -31,7 +32,7 @@ export function initAddCommentListener() {
     const textInputEl = document.getElementById('add-form-text')
     const sendButtonEl = document.getElementById('add-form-button')
     const nameInputEl = document.getElementById('add-form-name')
-    sendButtonEl.addEventListener('click', () => {
+    const handlePostClick = () => {
         // let currentDate = new Date()
 
         textInputEl.classList.remove('error')
@@ -53,24 +54,40 @@ export function initAddCommentListener() {
             name: nameInputEl.value
                 .replaceAll('<', '&lt;')
                 .replaceAll('>', '&gt;'),
+            // Для проверки работы при 500 ошибке
+            forceError: true,
         }
 
-        fetch('https://wedev-api.sky.pro/api/v1/mikhail-zakharov/comments', {
-            method: 'POST',
-            body: JSON.stringify(newComment),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data)
+        postComment(newComment)
+            .then((response) => {
+                if (response.status === 400) {
+                    throw new Error('Неверно введены данные')
+                } else {
+                    return response.json()
+                }
+            })
+            .then(() => {
                 fetchAndLoad()
-
-                sendButtonEl.disabled = false
-                sendButtonEl.textContent = 'Написать'
+            })
+            .then(() => {
                 textInputEl.value = ''
                 nameInputEl.value = ''
             })
-            .catch((error) => console.error(error))
-    })
+            .catch((error) => {
+                if (error.message === 'Ошибка сервера') {
+                    handlePostClick()
+                } else {
+                    alert('Произошла ошибка')
+                }
+            })
+            .finally(() => {
+                sendButtonEl.disabled = false
+                sendButtonEl.textContent = 'Написать'
+            })
+    }
+
+    sendButtonEl.addEventListener('click', handlePostClick)
+    //...
 }
 
 function toggleLike(index) {
