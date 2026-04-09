@@ -1,11 +1,13 @@
-import { initAddCommentListener } from './modules/initListeners.js'
-import { fetchAndLoad } from './modules/fetchAndLoad.js'
-import { commentsContainer } from './modules/renderComments.js'
+//import { initAddCommentListener } from './modules/initListeners.js'
+import { fetchAndLoad } from './modules/api.js'
+import { app } from './modules/renderLogin.js'
 
-console.log(commentsContainer)
-commentsContainer.innerHTML = '<h2>Загружаю комментарии...</h2>'
+export const elseContainer = document.getElementById('else-container')
+
+app.innerHTML = '<h2>Загружаю комментарии...</h2>'
+
 fetchAndLoad()
 
-initAddCommentListener()
+//initAddCommentListener()
 
 console.log('It works!')

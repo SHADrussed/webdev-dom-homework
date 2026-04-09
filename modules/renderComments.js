@@ -1,11 +1,18 @@
-import { initAnswerListeners, initLikeListeners } from './initListeners.js'
 import { comments } from './comments.js'
-
-export const commentsContainer = document.getElementById('comment-section')
+import { name, token } from './api.js'
+import {
+    initAddCommentListener,
+    initAnswerListeners,
+    initLikeListeners,
+    initLoginListener,
+    initRegistrateListener,
+} from './initListeners.js'
+import { app } from './renderLogin.js'
 
 export function renderComments() {
     const commentsHtml = comments
         .map((comment, index) => {
+            //date configure
             let string_date = new Date(comment.date)
             let years = string_date.getFullYear()
             let month = string_date.getMonth() + 1
@@ -31,6 +38,8 @@ export function renderComments() {
             }
 
             const date = `${day}.${month}.${years} ${hours}:${minutes}:${seconds}`
+
+            //comments html
             return `<li class="comment">
           <div class="comment-header">
             <div id='name'>${comment.author.name}</div>
@@ -51,8 +60,49 @@ export function renderComments() {
         })
         .join('')
 
-    commentsContainer.innerHTML = commentsHtml
+    const addCommentsHtml = `
+    <div class="add-form">
+        <input
+          type="text"
+          class="add-form-name"
+          id="add-form-name"
+          placeholder="Введите ваше имя"
+          readonly
+          value=${name}
+        />
+        <textarea
+          type="textarea"
+          class="add-form-text"
+          id="add-form-text"
+          placeholder="Введите ваш коментарий"
+          rows="4"
+        ></textarea>
+        <div class="add-form-row">
+          <button id="add-form-button" class="add-form-button">Написать</button>
+        </div>
+      </div>
+      `
 
-    initLikeListeners()
-    initAnswerListeners()
+    const authBlock = `
+    <div>
+      <button id="login-page-button" class="button">Login</button>
+      <button id="registrate-page-button" class="button">Registrate</button>
+    </div>
+    `
+
+    const baseHtml = `
+    <div class="container">${commentsHtml}</div>
+    ${token ? addCommentsHtml : authBlock}
+    `
+
+    app.innerHTML = baseHtml
+
+    if (token) {
+        initLikeListeners()
+        initAnswerListeners()
+        initAddCommentListener()
+    } else {
+        initLoginListener()
+        initRegistrateListener()
+    }
 }

@@ -1,7 +1,18 @@
 import { comments } from './comments.js'
 import { renderComments } from './renderComments.js'
-import { fetchAndLoad } from './fetchAndLoad.js'
-import { postComment } from './postComment.js'
+import { fetchAndLoad } from './api.js'
+import { postComment } from './api.js'
+import { renderLogin } from './renderLogin.js'
+import { renderRegistration } from './renderRegistration.js'
+
+export function initLoginListener() {
+    const loginButton = document.getElementById('login-page-button')
+    loginButton.addEventListener('click', renderLogin)
+}
+export function initRegistrateListener() {
+    const loginButton = document.getElementById('registrate-page-button')
+    loginButton.addEventListener('click', renderRegistration)
+}
 
 export function initLikeListeners() {
     const likeButtons = document.querySelectorAll('.like-button')
@@ -54,11 +65,9 @@ export function initAddCommentListener() {
             name: nameInputEl.value
                 .replaceAll('<', '&lt;')
                 .replaceAll('>', '&gt;'),
-            // Для проверки работы при 500 ошибке
-            forceError: true,
         }
 
-        postComment(newComment)
+        postComment(newComment.text)
             .then((response) => {
                 if (response.status === 400) {
                     throw new Error('Неверно введены данные')
@@ -68,8 +77,7 @@ export function initAddCommentListener() {
             })
             .then(() => {
                 fetchAndLoad()
-            })
-            .then(() => {
+
                 textInputEl.value = ''
                 nameInputEl.value = ''
             })
@@ -85,9 +93,8 @@ export function initAddCommentListener() {
                 sendButtonEl.textContent = 'Написать'
             })
     }
-
+    // Добавляем listener on comment
     sendButtonEl.addEventListener('click', handlePostClick)
-    //...
 }
 
 function toggleLike(index) {
