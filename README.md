@@ -1,9 +1,30 @@
-# Проект "Комментарии"
+# Comment Section
 
-https://glebkaf.github.io/webdev-dom-homework/
+## 🇷🇺 Описание
 
-Верстка для учебного проекта студентов Skypro
+Учебный проект, в ходе которого я сделал сетку коментариев, авторизацию и связь с backend API.
 
-## Как разрабатывать
+Функционал:
 
-Открой index.html в браузере
+- Добавление комментариев
+- Авторизация
+- Валидация полей
+- Отправка на API
+
+## EN Description
+
+Educational project with comment section, authorization and connection with backend API.
+
+Features:
+
+- Comments
+- Authorization
+- Field validation
+- Fetch API
+
+## 🚀 Setup
+
+```bash
+npm install
+npm run dev
+```
